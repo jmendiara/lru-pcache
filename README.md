@@ -1,29 +1,46 @@
 
-# node-typescript-boilerplate
+# lru-pcache
 
-👩🏻‍💻 Developer Ready: A comprehensive template. Works out of the box for most [Node.js][nodejs] projects.
+An LRU cache for promises. Developer friendly
 
-🏃🏽 Instant Value: All basic tools included and configured:
+## Features
 
-- [TypeScript][typescript] [4.1][typescript-4-0]
-- [ESLint][eslint] with some initial rules recommendation
-- [Jest][jest] for fast unit testing and code coverage
-- Type definitions for Node.js and Jest
-- [Prettier][prettier] to enforce consistent code style
-- NPM [scripts](#available-scripts) for common operations
-- Simple example of TypeScript code and unit test
-- .editorconfig for consistent file format
-- Example configuration for [GitHub Actions][gh-actions]
+ - Promisification: Async ready to easily change to a memcached/redis implementation
+ - Improved get method, to make more expressive usage of the pattern "if not found
+ in the cache, go get it, store in the cache, and return the value"
+ - Funnel values: Promises are stored and returned, so if the value for a key
+ is being obtained while another get is requested, the promise of the value is returned
+ so only one request for value is done
+ - Compatible with non-promises methods
 
-🤲 Free as in speech: available under the APLv2 license.
+>  100% coverage
 
-## Getting Started
+## Basic Usage
 
-This project is intended to be used with the latest Active LTS release of [Node.js][nodejs].
+```js
+import { Cache } from 'lru-pcache';
 
-### Use as a repository template
+const cache = new Cache({ // see https://github.com/isaacs/node-lru-cache#options for options
+  max: 50, // # of items
+  maxAge: 10 * 60 * 1000, // expiration in ms (10 min)
+});
 
-To start, just click the **[Use template][repo-template-action]** link (or the green button). Now start adding your code in the `src` and unit tests in the `__tests__` directories.
+// The old method without cache
+const getCarUncached = async (name) => {
+  const { data } = await axios.get(`https://example.com/cars/${name}`);
+  return data;
+});
+
+// With cache: easy addinng
+const getCar = async (name) => cache.get(name, async () => {
+  const { data } = await axios.get(`https://example.com/cars/${name}`);
+  return data;
+});
+
+await volvo = await getCar('Volvo');
+await cache.del('Volvo'); // delete from cache
+await cache.reset(); // clear cache
+```
 
 ## Development setup
 
