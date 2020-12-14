@@ -41,26 +41,30 @@ export class Cache<K, V = unknown> {
    *    stored in the cache for that key
    * @returns {Promise.<V>} the cache entry
    */
-  async get(key: K, getter: () => Promise<V> | V, maxAge?: number): Promise<V> {
+  async get(key: K, getter?: () => Promise<V> | V, maxAge?: number): Promise<V | undefined> {
     const inCache = this.lru.get(key);
     if (inCache) {
       return inCache;
     }
 
-    // Create a promise to hold the getter promise,
-    // because it may throw sync
-    const promise = new Promise<V>((resolve, reject) => {
-      try {
-        resolve(getter());
-      } catch (err) {
-        reject(err);
-      }
-    });
+    if (getter) {
+      // Create a promise to hold the getter promise,
+      // because it may throw sync
+      const promise = new Promise<V>((resolve, reject) => {
+        try {
+          resolve(getter());
+        } catch (err) {
+          reject(err);
+        }
+      });
 
-    // once stored, we resolve with the getter promise,
-    // to allow userland to use the value inmediatly
-    await this.set(key, promise, maxAge);
-    return promise;
+      // once stored, we resolve with the getter promise,
+      // to allow userland to use the value inmediatly
+      await this.set(key, promise, maxAge);
+      return promise;
+    } else {
+      return undefined;
+    }
   }
 
   /**
@@ -95,5 +99,12 @@ export class Cache<K, V = unknown> {
    */
   async reset(): Promise<void> {
     return this.lru.reset();
+  }
+
+  /**
+   * Prunes the cache, deleting expired items from the cache
+   */
+  async prune(): Promise<void> {
+    return this.lru.prune();
   }
 }

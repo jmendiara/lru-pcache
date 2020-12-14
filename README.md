@@ -43,6 +43,7 @@ const getCar = async (name) => cache.get(name, async () => {
 await volvo = await getCar('Volvo');
 await cache.del('Volvo'); // delete from cache
 await cache.reset(); // clear cache
+await cache.prune(); // remove expired items from cache
 ```
 
 ## Development setup

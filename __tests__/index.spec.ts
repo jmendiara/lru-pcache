@@ -49,6 +49,32 @@ describe('Cache', () => {
     expect(method).toHaveBeenCalledTimes(2);
   });
 
+  it('should prune the cache', async () => {
+    const onDispose = jest.fn();
+
+    const cache = new Cache({
+      maxAge: 10,
+      dispose: onDispose,
+    });
+
+    const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+    const method = jest.fn(async (key) => `${key}_value`);
+
+    const value = await cache.get('key', () => method('key'));
+    expect(value).toBe('key_value');
+
+    await delay(100);
+
+    await cache.prune();
+
+    const isUnd = await cache.get('key');
+    expect(isUnd).toBeUndefined();
+
+    expect(method).toHaveBeenCalledTimes(1);
+    expect(onDispose).toHaveBeenCalledTimes(1);
+  });
+
   it('should not put failed items in the cache', async () => {
     const cache = new Cache();
     let callCount = 0;
