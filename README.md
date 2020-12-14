@@ -16,9 +16,12 @@ An LRU cache for promises. Developer friendly
 >  100% coverage
 
 ## Basic Usage
+```sh
+npm install lru-pcache
+```
 
 ```js
-import { Cache } from 'lru-pcache';
+const { Cache } = require('lru-pcache');
 
 const cache = new Cache({ // see https://github.com/isaacs/node-lru-cache#options for options
   max: 50, // # of items
@@ -47,10 +50,10 @@ await cache.reset(); // clear cache
 To clone the repository use the following commands:
 
 ```sh
-git clone https://github.com/jmendiara/node-typescript-boilerplate && cd node-typescript-boilerplate
+git clone https://github.com/jmendiara/lru-pcache && cd lru-pcache
 ```
 
-Use [VSCode development containers](https://code.visualstudio.com/docs/remote/containers),  directly [docker-compose](https://docs.docker.com/compose/
+Use [VSCode development containers](https://code.visualstudio.com/docs/remote/containers),  directly [docker-compose](https://docs.docker.com/compose/)
 
 ```sh
 # Shell interactive session inside a container
