@@ -108,3 +108,40 @@ export class Cache<K, V = unknown> {
     return this.lru.prune();
   }
 }
+
+export interface Cache<K, V = unknown> {
+  /**
+   * Gets a value from the cache. When an optional getter method is provided,
+   * it will be called when there is a cache miss to get the value and store
+   * it in the cache.
+   * When the getter method throws/rejects, it will be propagated down the chain
+   *
+   * ```js
+   *    // Old Way (Sync code)
+   *    let value = cache.get(key);
+   *    if (!value) {
+   *      value = calculateValue();
+   *      cache.put(key, value);
+   *    }
+   *    return value;
+   * ```
+   *    that becomes
+   * ```js
+   *    return cache.get(key, calculateValue);
+   * ```
+   *
+   * @param key the cache entry key
+   * @param getter the function to call when a value is not found
+   *    in the cache. Return promise or a discrete value, that will be
+   *    stored in the cache for that key
+   * @returns the cache entry
+   */
+  get(key: K, getter?: () => Promise<V> | V, maxAge?: number): Promise<V>;
+  /**
+   * Gets a value from the cache.
+   *
+   * @param key the cache entry key
+   * @returns the cache entry
+   */
+  get(key: K): Promise<V | undefined>;
+}

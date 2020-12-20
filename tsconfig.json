@@ -14,7 +14,7 @@
     "noImplicitReturns": true,
     "noImplicitThis": true,
     "outDir": "./lib",
-    "removeComments": true,
+    "removeComments": false,
     "rootDir": "./src",
     "sourceMap": true,
     "strictNullChecks": true,
